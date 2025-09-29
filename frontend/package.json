@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://Monari14.github.io/f1nfo",
+  "homepage": "https://monari14.github.io/f1nfo",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

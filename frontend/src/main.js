@@ -3,19 +3,19 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import App from "./App.vue";
 
 import Seasons from "./pages/Seasons.vue";
-import SeasonDetails from "./pages/SeasonDetails.vue";
 import Schedule from "./pages/Schedule.vue";
-import TeamProfile from "./pages/TeamProfile.vue";
-import StageSummary from "./pages/StageSummary.vue";
-import Competitor from "./pages/Competitor.vue";
+import StageDetails from "./pages/StageDetails.vue";
+import Competitor from "./pages/CompetitorProfile.vue";
+import Team from "./pages/TeamProfile.vue";
+import CompetitorFelipe from "./pages/CompetitorFelipe.vue";
 
 const routes = [
   { path: "/", component: Seasons },
-  { path: "/season/:id", component: SeasonDetails, props: true },
-  { path: "/schedule", component: Schedule },
-  { path: "/teams", component: TeamProfile },
-  { path: "/stages", component: StageSummary },
-  { path: "/competitors", component: Competitor },
+  { path: "/schedule/:id", component: Schedule, props: true },
+  { path: "/gp/:id", name: "StageDetails", component: StageDetails, props: true },
+  { path: "/competitor/:id", component: Competitor, props: true },
+  { path: "/team/:id", component: Team, props: true },
+  { path: "/competitor/felipe_monari", component: CompetitorFelipe, props: true },
 ];
 
 const router = createRouter({

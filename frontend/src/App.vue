@@ -15,7 +15,7 @@ import Navbar from "./components/Navbar.vue";
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #222;
+  background: #111;
   color: #fff;
 }
 .container {

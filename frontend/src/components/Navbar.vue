@@ -1,19 +1,22 @@
 <template>
   <nav class="navbar">
-    <div class="logo">
+    <a href="/" class="logo">
       <img src="/logo.png" alt="Logo" />
       <span>f1nfo</span>
-    </div>
+    </a>
   </nav>
 </template>
 
 <style scoped>
 .navbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  background: #372e50ff;
-  padding: 10px 20px;
+  background: #121212;
+  padding: 14px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .logo {
@@ -21,12 +24,24 @@
   align-items: center;
   gap: 10px;
   font-size: 1.4rem;
-  font-weight: bold;
+  font-weight: 600;
   color: #fff;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
 }
 
 .logo img {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+}
+
+.logo span {
+  color: #e0e0e0;
+  letter-spacing: 0.5px;
+}
+
+.logo:hover {
+  opacity: 0.8;
 }
 </style>

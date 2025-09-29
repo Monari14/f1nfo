@@ -1,171 +1,170 @@
 <template>
   <div class="container">
-    <h1>Seasons</h1>
-    
+    <h1>Temporadas de F1</h1>
+
     <div v-if="loading" class="loading">Carregando...</div>
     <div v-if="error" class="error">{{ error }}</div>
 
-    <div v-if="stages.length" class="stages-grid">
+    <div v-if="seasons.length" class="stages-grid">
       <div 
-        v-for="stage in stages" 
-        :key="stage.id" 
+        v-for="season in seasons" 
+        :key="season.id" 
         class="stage-card"
-        @click="goToSeason(stage.id)"
+        @click="goToSchedule(season.id)"
       >
-        <h2>{{ stage.description }}</h2>
-        <p><strong>Ano:</strong> {{ stage.year }}</p>
-        <p><strong>Início:</strong> {{ formatDate(stage.scheduled) }}</p>
-        <p><strong>Fim:</strong> {{ formatDate(stage.scheduled_end) }}</p>
+        <h2>{{ season.description }}</h2>
+        <p><strong>Ano:</strong> {{ season.year }}</p>
+        <p><strong>Início:</strong> {{ formatDate(season.scheduled) }}</p>
+        <p><strong>Fim:</strong> {{ formatDate(season.scheduled_end) }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { callAPI } from "../api";
 
-const stages = ref([]);
+const seasons = ref([]);
 const loading = ref(false);
 const error = ref(null);
 const router = useRouter();
 
-function formatDate(isoString) {
-  const date = new Date(isoString);
-  return date.toLocaleString("pt-BR", { 
-    weekday: "short", 
-    day: "2-digit", 
-    month: "short", 
-    year: "numeric", 
-    hour: "2-digit", 
-    minute: "2-digit" 
+function formatDate(iso) {
+  if (!iso) return "-";
+  return new Date(iso).toLocaleString("pt-BR", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
   });
+}
+
+function saveCache(key, data, ttlMinutes = 60) {
+  localStorage.setItem(key, JSON.stringify({ data, expires: Date.now() + ttlMinutes*60*1000 }));
+}
+function getCache(key) {
+  const cached = localStorage.getItem(key);
+  if (!cached) return null;
+  try {
+    const parsed = JSON.parse(cached);
+    if (Date.now() < parsed.expires) return parsed.data;
+    localStorage.removeItem(key);
+  } catch { localStorage.removeItem(key); }
+  return null;
+}
+
+function goToSchedule(id) {
+  router.push(`/schedule/${id}`);
 }
 
 async function loadSeasons() {
   loading.value = true;
   error.value = null;
+  const cacheKey = "seasons";
+  const cached = getCache(cacheKey);
+  if (cached) {
+    seasons.value = cached;
+    loading.value = false;
+    return;
+  }
+
   try {
     const data = await callAPI("/seasons.json");
-    if (data.stages) {
-      stages.value = data.stages.map(stage => ({
-        id: stage.id,
-        description: stage.description,
-        year: new Date(stage.scheduled).getFullYear(),
-        scheduled: stage.scheduled,
-        scheduled_end: stage.scheduled_end
+    if (data.stages?.length) {
+      const mapped = data.stages.map(s => ({
+        id: s.id,
+        description: s.description,
+        year: new Date(s.scheduled).getFullYear(),
+        scheduled: s.scheduled,
+        scheduled_end: s.scheduled_end || s.scheduled
       }));
-    }
-  } catch (err) {
-    error.value = err.message;
-  } finally {
-    loading.value = false;
-  }
+      seasons.value = mapped;
+      saveCache(cacheKey, mapped, 60);
+    } else error.value = "Nenhuma temporada encontrada.";
+  } catch (err) { error.value = err.message; }
+  finally { loading.value = false; }
 }
 
-function goToSeason(id) {
-  router.push(`/season/${id}`);
-}
-
-loadSeasons();
+onMounted(loadSeasons);
 </script>
 
 <style scoped>
-/* Container principal */
+/* Container centralizado */
 .container {
-  max-width: 960px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 30px 20px;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  padding: 40px 20px;
+  font-family: "Segoe UI", sans-serif;
+  color: #e0e0e0;
 }
 
-/* Botões */
-.btn {
-  display: inline-block;
-  padding: 12px 24px;
-  margin-bottom: 20px;
-  background: linear-gradient(135deg, #e10600, #ff3b3b);
+/* Título */
+h1 {
+  font-weight: 400;
+  text-align: center;
+  margin-bottom: 40px;
   color: #fff;
-  font-weight: 600;
-  font-size: 1rem;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.btn:hover {
-  background: linear-gradient(135deg, #b80400, #e60000);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* Loading e erros */
+/* Loading e erro */
 .loading {
   font-style: italic;
-  color: #555;
-  margin-bottom: 10px;
+  color: #aaa;
+  text-align: center;
 }
 
 .error {
-  color: #d8000c;
-  background-color: #ffd2d2;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  box-shadow: inset 0 0 5px rgba(216, 0, 12, 0.2);
+  color: #ff6b6b;
+  background: #330000;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-/* Grid de estágios */
+/* Grid minimalista */
 .stages-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
 }
 
-/* Cards de estágios */
+/* Card dark minimal */
 .stage-card {
-  background: #fff;
+  background: #1e1e1e;
+  border-radius: 12px;
   padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-top: 4px solid #e10600;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
 
 .stage-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.7);
 }
 
-/* Títulos e textos dos cards */
+/* Título do card */
 .stage-card h2 {
-  margin: 0 0 12px 0;
-  font-size: 1.25rem;
-  color: #e10600;
-  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  font-size: 1.2rem;
+  color: #ff3c3c;
 }
 
+/* Detalhes do GP */
 .stage-card p {
   margin: 4px 0;
-  line-height: 1.5;
-  color: #555;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  color: #ccc;
 }
 
-/* Responsividade */
-@media (max-width: 600px) {
-  .btn {
-    width: 100%;
-    text-align: center;
-  }
-
-  .stages-grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
+.stage-card p span {
+  font-weight: 500;
+  color: #fff;
 }
 </style>

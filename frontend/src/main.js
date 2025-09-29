@@ -10,8 +10,8 @@ import Team from "./pages/TeamProfile.vue";
 import CompetitorFelipe from "./pages/CompetitorFelipe.vue";
 
 const routes = [
-  { path: "/", component: Seasons },
-  { path: "/schedule/:id", component: Schedule, props: true },
+  { path: "/", name: "Seasons", component: Seasons },
+  { path: "/schedule/:id", name: "Schedule", component: Schedule, props: true },
   { path: "/gp/:id", name: "StageDetails", component: StageDetails, props: true },
   { path: "/competitor/:id", component: Competitor, props: true },
   { path: "/team/:id", component: Team, props: true },

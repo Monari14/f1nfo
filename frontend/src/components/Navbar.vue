@@ -1,11 +1,15 @@
 <template>
   <nav class="navbar">
-    <a href="/" class="logo">
+    <RouterLink :to="{ name: 'Seasons' }" class="logo">
       <img src="/logo.png" alt="Logo" />
       <span>f1nfo</span>
-    </a>
+    </RouterLink>
   </nav>
 </template>
+
+<script setup>
+import { RouterLink } from "vue-router";
+</script>
 
 <style scoped>
 .navbar {

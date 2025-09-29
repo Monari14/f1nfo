@@ -106,10 +106,10 @@
                       :alt="c.country_code"
                       class="competitor-flag"
                     />
-                    <router-link :to="`/competitor/${c.id}`">{{ c.name || '-' }}</router-link>
+                    <router-link :to="`/competitor/${c.id}`" target="_blank">{{ c.name || '-' }}</router-link>
                   </div>
                   <div class="team-name">
-                    <router-link :to="`/team/${c.team?.id || '-'}`">{{ c.team?.name || '-' }}</router-link>
+                    <router-link :to="`/team/${c.team?.id || '-'}`" target="_blank">{{ c.team?.name || '-' }}</router-link>
                     <br>{{ c.result?.car_number ?? '-' }}
                   </div>
                 </td>

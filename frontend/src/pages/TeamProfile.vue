@@ -31,7 +31,7 @@
               class="pilot-photo"
             />
             <div class="pilot-info">
-              <router-link :to="`/competitor/${c.id}`" class="pilot-name">{{ c.name }}</router-link>
+              <router-link :to="`/competitor/${c.id}`" class="pilot-name" target="_blank">{{ c.name }}</router-link>
               <span class="pilot-abbr">({{ c.abbreviation }})</span>
               <img
                 v-if="c.country_code && iso3to2[c.country_code]"

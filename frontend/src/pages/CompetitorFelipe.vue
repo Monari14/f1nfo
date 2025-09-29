@@ -12,7 +12,7 @@
           />
         </div>
         <div class="pilot-name-flag">
-          <h1>Monari, Felipe</h1>
+          <h1>Monari, Felipe Eduardo</h1>
           <img
             :src="`https://flagcdn.com/w40/br.png`"
             alt="Bandeira"
